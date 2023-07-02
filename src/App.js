@@ -1,25 +1,42 @@
-import logo from './logo.svg';
-import './App.css';
+import "./App.css";
+import { useState, useEffect } from 'react';
+
+const srcArray = [
+  { src: "black-1.jpg", matched: false },
+  { src: "black-2.jpg", matched: false },
+  { src: "yellow-1.jpg", matched: false },
+  { src: "yellow-2.jpg", matched: false },
+  { src: "yellow-3.jpg", matched: false },
+];
 
 function App() {
+  const [cards, setCards] = useState([]);
+
+  const shuffleCards = () => {
+    const shuffleArray = [...srcArray, ...srcArray]
+      .sort(() => Math.random() - 0.5)
+      .map((card) => ({ ...card, id: Math.random() }));
+
+    setCards(shuffleArray);
+  };
+
+  useEffect(() => {
+    shuffleCards();
+  }, []);
+
+  useEffect(() => {
+    console.log(cards);
+  }, [cards]);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <h1 className="heading">五倍紙牌遊戲</h1>
+      <div className="flex">
+        <button className="restart">New Game</button>
+      </div>
+      <div className="container"></div>
+    </>
   );
-}
+};
 
 export default App;
