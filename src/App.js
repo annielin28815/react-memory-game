@@ -12,6 +12,9 @@ const srcArray = [
 
 function App() {
   const [cards, setCards] = useState([]);
+  const [firstChoice, setFirstChoice] = useState(null);
+  const [secondChoice, setSecondChoice] = useState(null);
+  const [disabled, setDisabled] = useState(false);
 
   const shuffleCards = () => {
     const shuffleArray = [...srcArray, ...srcArray]
@@ -21,13 +24,38 @@ function App() {
     setCards(shuffleArray);
   };
 
+  const atClick = (card) => {
+    firstChoice ? setSecondChoice(card) : setFirstChoice(card);
+  };
+
+  const resetTurn = () => {
+    setFirstChoice(null);
+    setSecondChoice(null);
+    setDisabled(false);
+  };
+
   useEffect(() => {
     shuffleCards();
   }, []);
 
   useEffect(() => {
-    console.log(cards);
-  }, [cards]);
+    if (firstChoice && secondChoice) {
+      setDisabled(true)
+      if (firstChoice.src === secondChoice.src) {
+        setCards((prevCards) => {
+          return prevCards.map((card) => {
+            if (card.src === firstChoice.src) {
+              return { ...card, matched: true }
+            }
+            return card
+          })
+        })
+        resetTurn()
+      } else {
+        setTimeout(() => resetTurn(), 1000)
+      }
+    }
+  }, [firstChoice, secondChoice]);
 
   return (
     <>
@@ -38,7 +66,13 @@ function App() {
       <div className="container">
         {cards.map((item) => {
           return (
-            <Card key={item.id} card={item} />
+            <Card
+              card={item}
+              key={item.id}
+              handleClick={atClick}
+              flipped={item === firstChoice || item === secondChoice || item.matched}
+              disabled={disabled}
+           />
           )
         })}
       </div>
